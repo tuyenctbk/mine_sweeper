@@ -26,6 +26,16 @@ jobs:
           flutter-version: '3.16.0'
           channel: 'stable'
       
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.flutter
+          key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-
+      
       - name: Enable web
         run: flutter config --enable-web
         
@@ -33,7 +43,9 @@ jobs:
         run: flutter pub get
         
       - name: Build
-        run: flutter build web --release --base-href /mine_sweeper/
+        run: |
+          flutter clean
+          flutter build web --release --base-href /mine_sweeper/
         
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
